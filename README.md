@@ -1,2 +1,2 @@
 # doodstream-uploader-bot
-bot telegram for uplder doodstream uploader
+bot telegram for doodstream uploader
