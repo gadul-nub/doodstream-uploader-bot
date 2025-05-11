@@ -3,7 +3,7 @@ import requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-TELEGRAM_TOKEN = "8160463425:AAH4njJXEsGWNWSFmxwla0mmw4_1LmQVe8E"
+TELEGRAM_TOKEN = "your token telegram bot"
 
 user_api_keys = {}
 
