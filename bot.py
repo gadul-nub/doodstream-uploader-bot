@@ -1,6 +1,4 @@
 import os
-import asyncio
-import logging
 import requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
@@ -28,43 +26,23 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not video:
         return await update.message.reply_text("🚫 Silakan kirim file video.")
 
-    waiting_msg = await update.message.reply_text("⏳ Sedang mengunggah videomu ke DoodStream...")
-
-    asyncio.create_task(process_upload(context, update, video, api_key, waiting_msg.message_id))
-
-async def process_upload(context, update, video, api_key, reply_to_msg_id):
     file = await context.bot.get_file(video.file_id)
-    file_path = f"{video.file_unique_id}.mp4"
-    await file.download_to_drive(file_path)
+    file_url = file.file_path
 
-    try:
-        server_resp = requests.get(f"https://doodapi.co/api/upload/server?key={api_key}")
-        server_data = server_resp.json()
-        if server_data.get("status") != 200:
-            return await context.bot.send_message(chat_id=update.effective_chat.id, text="❌ Gagal mengambil server upload.", reply_to_message_id=reply_to_msg_id)
+    await update.message.reply_text("⏳ Mencoba unggah file langsung dari URL Telegram...")
 
-        upload_url = server_data["result"] + f"?{api_key}"
-        with open(file_path, "rb") as f:
-            files = {"file": f}
-            data = {"api_key": api_key}
-            upload_resp = requests.post(upload_url, files=files, data=data)
+    response = requests.get(f"https://doodapi.co/api/upload/url?key={api_key}&url={file_url}")
 
-        result = upload_resp.json()
-        if result.get("status") == 200 and "result" in result:
-            link = result["result"][0].get("download_url")
-            return await context.bot.send_message(chat_id=update.effective_chat.id, text=f"✅ Upload sukses!\n📎 Link: {link}", reply_to_message_id=reply_to_msg_id)
-        else:
-            return await context.bot.send_message(chat_id=update.effective_chat.id, text="❌ Upload gagal. Coba lagi.", reply_to_message_id=reply_to_msg_id)
-
-    except Exception as e:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"❌ Terjadi kesalahan: {e}", reply_to_message_id=reply_to_msg_id)
-
-    finally:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    result = response.json()
+    if result.get("status") == 200 and "result" in result:
+        link = result["result"][0].get("download_url")
+        return await update.message.reply_text(f"✅ Upload sukses!\n📎 Link: {link}")
+    else:
+        return await update.message.reply_text("❌ Upload via URL gagal. File mungkin tidak diterima oleh DoodStream.")
 
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("api", save_api_key))
 app.add_handler(MessageHandler(filters.VIDEO | filters.Document.VIDEO, handle_video))
+
 app.run_polling()
