@@ -36,13 +36,12 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = response.json()
     if result.get("status") == 200 and isinstance(result.get("result"), list):
         if result["result"]:
-            link = result["result"][0].get("download_url")
-            return await update.message.reply_text(f"✅ Upload sukses!\n📎 Link: {link}\nDetail:result")
+            return await update.message.reply_text(f"✅ Upload sukses!\n📎 Link: {result}")
         else:
             return await update.message.reply_text("⚠️ Respons kosong dari DoodStream. Mungkin file tidak diterima.")
     else:
         await update.message.reply_text("❌ Upload via URL gagal.")
-        await update.message.reply_text(f"🧾 Detail:result")
+        await update.message.reply_text(f"🧾 Detail: {result}")
 
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
