@@ -11,14 +11,14 @@ user_api_keys = {}
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start(bot, message):
-    await message.reply("👋 Halo! {message.chat.first_name}\nKirim `/api your_doodstream_api_key` untuk mulai.")
+    await message.reply("👋 Halo!\nKirim `/api your_doodstream_api_key` untuk mulai.")
 
 @bot.on_message(filters.command("api") & filters.private)
 async def set_api(bot, message):
     try:
         api_key = message.text.split(" ", 1)[1]
         user_api_keys[message.from_user.id] = api_key
-        await message.reply("✅ API key disimpan.")
+        await message.reply("✅ API key disimpan.\n🎞️ Kirim video untuk di upload ke doodstream.")
     except IndexError:
         await message.reply("⚠️ Format salah. Gunakan: `/api your_api_key`")
 
