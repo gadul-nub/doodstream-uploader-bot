@@ -2,9 +2,9 @@ from pyrogram import Client, filters
 import requests
 import os
 
-API_ID ="11757512"
-API_HASH = "19142777e9ee3cd8809a30107323c84b"
-BOT_TOKEN ="8160463425:AAGyXQ99qTTEI8yt_kr0BVDBiPJu8TngUJs"
+API_ID = int(os.environ.get("API_ID"))
+API_HASH = os.environ.get("API_HASH")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 bot = Client("dood_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 user_api_keys = {} 
