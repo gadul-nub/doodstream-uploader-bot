@@ -43,7 +43,7 @@ async def handle_video(bot, message):
         result = res.json()
 
         if result.get("status") == 200:
-            await message.reply(f"✅ Sukses!\n📎 Pesan: {msg}\nWaktu server: {time}\nTotal: {total}\nDigunakan: {used}")
+            await message.reply(f"✅ Sukses!\n📎 Pesan: {result}")
         else:
             await message.reply(f"❌ Gagal upload:\n {result}")
     except Exception as e:
